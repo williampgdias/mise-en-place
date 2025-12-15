@@ -85,4 +85,11 @@ class ReservationController extends Controller
             'reservation' => $reservation
         ]);
     }
+
+    public function destroy(Reservation $reservation)
+    {
+        $reservation->delete();
+
+        return response()->noContent();
+    }
 }
