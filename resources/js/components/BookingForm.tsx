@@ -21,12 +21,27 @@ export default function BookingForm() {
         setLoading(true);
         setMessage(null);
 
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
         try {
             const response = await fetch("/api/reservations", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
                 body: JSON.stringify(formData),
             });
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error(
+                    "Session expired. Please refresh the page and try again."
+                );
+            }
 
             const data = await response.json();
 
@@ -46,6 +61,7 @@ export default function BookingForm() {
                 tel_number: "",
             });
         } catch (error: any) {
+            console.error(error);
             setMessage({ type: "error", text: error.message });
         } finally {
             setLoading(false);

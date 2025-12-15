@@ -17,8 +17,14 @@ class ReservationController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|email',
             'tel_number' => 'required|string',
-            'res_date' => 'required|date|after:now',
+            'res_date' => ['required', 'date', 'after_or_equal:now'],
             'guest_number' => 'required|integer|min:1',
+        ], [
+            'res_date.after_or_equal' => 'Please, select a future date and time for your reservation.',
+            'first_name.required' => 'We need your name to hold the table.',
+            'guest_number.max' => 'For groups larger than 10, please contact us directly by phone.',
+            'tel_number.required' => 'A phone number is required.',
+            'email.email' => 'Please provide a valid email address.',
         ]);
 
         // Define the time
