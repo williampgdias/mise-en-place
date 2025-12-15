@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('capacity');
-            $table->enum('location', ['front', 'terrace', 'bar'])->default('front');
+            $table->string('location');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

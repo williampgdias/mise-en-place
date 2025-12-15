@@ -9,29 +9,36 @@ class TableSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create 5 tables of 2 people
+        // Tables 1, 2, 3, 4, 5
         for ($i = 1; $i <= 5; $i++) {
             Table::create([
-                'name' => 'Table 2.' . $i,
+                'name' => 'Table ' . $i, // Ex: "Table 1"
                 'capacity' => 2,
                 'location' => 'front'
             ]);
         }
 
-        // Create 3 tables of 4 people
-        for ($i = 1; $i <= 3; $i++) {
+        // Tables 10, 11, 12, 13, 14
+        for ($i = 0; $i < 5; $i++) {
             Table::create([
-                'name' => 'Table 4.' . $i,
+                'name' => 'Table ' . (10 + $i), // Ex: "Table 10"
                 'capacity' => 4,
-                'location' => 'front'
+                'location' => 'inside'
             ]);
         }
 
-        // Create a one big table (Family)
+        // Table 20
         Table::create([
-            'name' => 'Family Table',
-            'capacity' => 8,
+            'name' => 'Table 20 (VIP)',
+            'capacity' => 6,
             'location' => 'terrace'
+        ]);
+
+        // Table 99
+        Table::create([
+            'name' => 'Table 99',
+            'capacity' => 8,
+            'location' => 'inside'
         ]);
     }
 }
