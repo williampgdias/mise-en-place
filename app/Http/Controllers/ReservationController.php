@@ -70,4 +70,19 @@ class ReservationController extends Controller
 
         return response()->json($reservations);
     }
+
+    // Update the status
+    public function update(Request $request, Reservation $reservation)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,confirmed,seated,cancelled,no_show',
+        ]);
+
+        $reservation->update($validated);
+
+        return response()->json([
+            'message' => 'Reservation status updated!',
+            'reservation' => $reservation
+        ]);
+    }
 }

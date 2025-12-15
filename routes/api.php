@@ -8,3 +8,6 @@ Route::post('/reservations', [ReservationController::class, 'store']);
 
 // Read
 Route::get('/reservations', [ReservationController::class, 'index']);
+
+// Update the Status
+Route::patch('/reservations/{reservation}', [ReservationController::class, 'update']);
