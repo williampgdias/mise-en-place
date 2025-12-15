@@ -138,13 +138,88 @@ function AdminDashboard() {
     );
 }
 
-// O App Principal
+// The main App
 function App() {
     const [view, setView] = useState<"customer" | "admin">("customer");
+    const [isLoadingAuth, setIsLoadingAuth] = useState(false);
+    const [isCheckingInitialAuth, setIsCheckingInitialAuth] = useState(true);
+
+    useEffect(() => {
+        checkLoginStatus();
+    }, []);
+
+    const checkLoginStatus = async () => {
+        try {
+            const response = await fetch("/api/user", {
+                headers: {
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            if (response.ok) {
+                setView("admin");
+            }
+        } catch (error) {
+        } finally {
+            setIsCheckingInitialAuth(false);
+        }
+    };
+
+    // Função que verifica se o usuário pode entrar na área VIP
+    const handleManagerClick = async () => {
+        setIsLoadingAuth(true);
+        try {
+            // Tenta pegar os dados do usuário logado
+            const response = await fetch("/api/user", {
+                headers: {
+                    Accept: "application/json",
+                    // Importante: Diz ao navegador para enviar o cookie de sessão junto
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            if (response.ok) {
+                // Se deu 200 OK, o usuário está logado!
+                setView("admin");
+            } else {
+                // Se deu 401 (Erro), manda pro login
+                window.location.href = "/login";
+            }
+        } catch (error) {
+            // Se a internet cair ou algo grave acontecer
+            console.error("Auth error", error);
+            window.location.href = "/login";
+        } finally {
+            setIsLoadingAuth(false);
+        }
+    };
+
+    const handleLogout = async () => {
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        await fetch("/logout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken || "",
+            },
+        });
+        window.location.href = "/";
+    };
+
+    if (isCheckingInitialAuth) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 animate-pulse text-blue-600 font-bold">
+                Checking access...
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Navbar */}
             <nav className="bg-white border-b border-gray-200 px-4 py-3 mb-8 sticky top-0 z-50">
                 <div className="max-w-4xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -154,7 +229,7 @@ function App() {
                         </h1>
                     </div>
 
-                    <div className="flex bg-gray-100 p-1 rounded-lg">
+                    <div className="flex gap-2 items-center bg-gray-100 p-1 rounded-lg">
                         <button
                             onClick={() => setView("customer")}
                             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200
@@ -166,17 +241,24 @@ function App() {
                         >
                             Customer View
                         </button>
-                        <button
-                            onClick={() => setView("admin")}
-                            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200
-                                ${
-                                    view === "admin"
-                                        ? "bg-white text-purple-600 shadow-sm"
-                                        : "text-gray-500 hover:text-gray-700"
-                                }`}
-                        >
-                            Manager View
-                        </button>
+
+                        {/* Se estiver no modo ADMIN, mostra Logout em vez de Manager View */}
+                        {view === "admin" ? (
+                            <button
+                                onClick={handleLogout}
+                                className="px-4 py-1.5 rounded-md text-sm font-medium bg-red-100 text-red-600 hover:bg-red-200 transition-all duration-200"
+                            >
+                                Logout 🚪
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleManagerClick}
+                                disabled={isLoadingAuth}
+                                className="px-4 py-1.5 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700 transition-all duration-200"
+                            >
+                                {isLoadingAuth ? "Checking..." : "Manager View"}
+                            </button>
+                        )}
                     </div>
                 </div>
             </nav>
