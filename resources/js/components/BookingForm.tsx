@@ -31,18 +31,13 @@ export default function BookingForm() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(
-                    data.message || "There was an error in the booking."
-                );
+                throw new Error(data.message || "Something went wrong.");
             }
 
-            // Success!
             setMessage({
                 type: "success",
-                text: `Reservation confirmed! Table: ${data.table_assigned}`,
+                text: `Booking Confirmed! You are assigned to table: ${data.table_assigned}`,
             });
-
-            // Clean the form
             setFormData({
                 ...formData,
                 first_name: "",
@@ -58,146 +53,163 @@ export default function BookingForm() {
     };
 
     return (
-        <div className="bg-white p-8 rounded-lg shadow-lg border-t-4 border-blue-600 max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-                📅 Booking table
-            </h2>
+        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden">
+            <div className="bg-blue-600 py-6 px-8">
+                <h2 className="text-3xl font-bold text-white text-center">
+                    📅 Book a Table
+                </h2>
+                <p className="text-blue-100 text-center mt-2">
+                    Reserve your spot at Mise en Place
+                </p>
+            </div>
 
-            {message && (
-                <div
-                    className={`p-4 mb-4 rounded ${
-                        message.type === "success"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                    }`}
-                >
-                    {message.text}
-                </div>
-            )}
+            <div className="p-8">
+                {message && (
+                    <div
+                        className={`p-4 mb-6 rounded-lg text-sm font-medium ${
+                            message.type === "success"
+                                ? "bg-green-50 text-green-700 border border-green-200"
+                                : "bg-red-50 text-red-700 border border-red-200"
+                        }`}
+                    >
+                        {message.text}
+                    </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Name
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
-                            value={formData.first_name}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    first_name: e.target.value,
-                                })
-                            }
-                        />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                First Name
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="John"
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2.5 bg-gray-50 transition"
+                                value={formData.first_name}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        first_name: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Last Name
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="Doe"
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2.5 bg-gray-50 transition"
+                                value={formData.last_name}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        last_name: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Last name
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
-                            value={formData.last_name}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    last_name: e.target.value,
-                                })
-                            }
-                        />
-                    </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
-                            value={formData.email}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    email: e.target.value,
-                                })
-                            }
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                required
+                                placeholder="john@example.com"
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2.5 bg-gray-50 transition"
+                                value={formData.email}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        email: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                required
+                                placeholder="+1 234 567 890"
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2.5 bg-gray-50 transition"
+                                value={formData.tel_number}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        tel_number: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Phone Number
-                        </label>
-                        <input
-                            type="tel"
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
-                            value={formData.tel_number}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    tel_number: e.target.value,
-                                })
-                            }
-                        />
-                    </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Date and Time
-                        </label>
-                        <input
-                            type="datetime-local"
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
-                            value={formData.res_date}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    res_date: e.target.value,
-                                })
-                            }
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Date & Time
+                            </label>
+                            <input
+                                type="datetime-local"
+                                required
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2.5 bg-gray-50 transition"
+                                value={formData.res_date}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        res_date: e.target.value,
+                                    })
+                                }
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-1">
+                                Guests
+                            </label>
+                            <input
+                                type="number"
+                                min="1"
+                                max="10"
+                                required
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 py-2.5 bg-gray-50 transition"
+                                value={formData.guest_number}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        guest_number: parseInt(e.target.value),
+                                    })
+                                }
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            People
-                        </label>
-                        <input
-                            type="number"
-                            min="1"
-                            max="10"
-                            required
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50 p-2 border"
-                            value={formData.guest_number}
-                            onChange={(e) =>
-                                setFormData({
-                                    ...formData,
-                                    guest_number: parseInt(e.target.value),
-                                })
-                            }
-                        />
-                    </div>
-                </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition
-                        ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                    {loading ? "Checking Tables..." : "Booking table"}
-                </button>
-            </form>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full py-3.5 px-4 rounded-lg shadow-lg text-sm font-bold text-white tracking-wide uppercase transition duration-200 transform hover:-translate-y-0.5
+                            ${
+                                loading
+                                    ? "bg-gray-400 cursor-not-allowed"
+                                    : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            }`}
+                    >
+                        {loading
+                            ? "Checking Availability..."
+                            : "Confirm Reservation"}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
