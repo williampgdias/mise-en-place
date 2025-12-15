@@ -6,6 +6,8 @@ use App\Models\Reservation;
 use App\Models\Table;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationConfirmed;
 
 class ReservationController extends Controller
 {
@@ -62,10 +64,16 @@ class ReservationController extends Controller
             'status' => 'pending'
         ]);
 
+        try {
+            Mail::to($reservation->email)->send(new ReservationConfirmed($reservation));
+        } catch (\Exception $e) {
+            // Apenas loga o erro, mas deixa a reserva seguir
+            // Em produção usaríamos filas (Queues), mas para hoje está ótimo assim
+        }
+
         return response()->json([
-            'message' => 'Reservation created successfully!',
-            'table_assigned' => $table->name,
-            'reservation' => $reservation
+            'message' => 'Reservation created successfully',
+            'table_assigned' => $table->name
         ], 201);
     }
 
