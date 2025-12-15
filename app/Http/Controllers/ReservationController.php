@@ -62,4 +62,12 @@ class ReservationController extends Controller
             'reservation' => $reservation
         ], 201);
     }
+
+    public function index()
+    {
+        // Take all the bookings and "stick" the data of the table
+        $reservations = Reservation::with('table')->get();
+
+        return response()->json($reservations);
+    }
 }
