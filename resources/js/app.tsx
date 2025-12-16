@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import { Reservation } from "./types";
 import BookingForm from "./components/BookingForm";
 
-// Componente Dashboard (Admin)
+// Dashboard Component (Admin)
 function AdminDashboard() {
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState(true);
@@ -23,25 +23,61 @@ function AdminDashboard() {
     }, []);
 
     const handleStatusChange = async (id: number, newStatus: string) => {
-        await fetch(`/api/reservations/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: newStatus }),
-        });
-        // Atualização otimista na UI para ser mais rápido
-        setReservations((prev) =>
-            prev.map((res) =>
-                res.id === id ? { ...res, status: newStatus as any } : res
-            )
-        );
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        try {
+            const response = await fetch(`/api/reservations/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (!response.ok) throw new Error("Falha ao atualizar");
+
+            setReservations((prev) =>
+                prev.map((res) =>
+                    res.id === id ? { ...res, status: newStatus as any } : res
+                )
+            );
+        } catch (error) {
+            console.error("Erro ao atualizar status:", error);
+            alert("Não foi possível atualizar. Tente recarregar a página.");
+        }
     };
 
     const handleDelete = async (id: number) => {
         if (!confirm("Are you sure you want to cancel this reservation?"))
             return;
 
-        await fetch(`/api/reservations/${id}`, { method: "DELETE" });
-        setReservations((prev) => prev.filter((res) => res.id !== id));
+        const csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute("content");
+
+        try {
+            const response = await fetch(`/api/reservations/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    "X-CSRF-TOKEN": csrfToken || "",
+                },
+            });
+
+            if (!response.ok) throw new Error("Falha ao deletar");
+
+            setReservations((prev) => prev.filter((res) => res.id !== id));
+        } catch (error) {
+            console.error("Erro ao deletar:", error);
+            alert(
+                "Não foi possível apagar a reserva. Tente recarregar a página."
+            );
+        }
     };
 
     if (loading)
@@ -166,28 +202,23 @@ function App() {
         }
     };
 
-    // Função que verifica se o usuário pode entrar na área VIP
     const handleManagerClick = async () => {
         setIsLoadingAuth(true);
         try {
-            // Tenta pegar os dados do usuário logado
             const response = await fetch("/api/user", {
                 headers: {
                     Accept: "application/json",
-                    // Importante: Diz ao navegador para enviar o cookie de sessão junto
+
                     "X-Requested-With": "XMLHttpRequest",
                 },
             });
 
             if (response.ok) {
-                // Se deu 200 OK, o usuário está logado!
                 setView("admin");
             } else {
-                // Se deu 401 (Erro), manda pro login
                 window.location.href = "/login";
             }
         } catch (error) {
-            // Se a internet cair ou algo grave acontecer
             console.error("Auth error", error);
             window.location.href = "/login";
         } finally {
@@ -242,7 +273,6 @@ function App() {
                             Customer View
                         </button>
 
-                        {/* Se estiver no modo ADMIN, mostra Logout em vez de Manager View */}
                         {view === "admin" ? (
                             <button
                                 onClick={handleLogout}
